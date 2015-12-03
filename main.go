@@ -35,7 +35,12 @@ func main() {
 func valueAudit(path string, pathtoc string) []error {
 	var errs []error
 	df := store.NewValueDirectFile(path, pathtoc, openReadSeeker, openWriteSeeker)
-	if ok, verrs := df.VerifyHeadersAndTrailers(); !ok {
+	if ok, verrs := df.VerifyHeaderAndTrailer(); !ok {
+		return append(errs, verrs...)
+	} else if len(verrs) > 0 {
+		errs = append(errs, verrs...)
+	}
+	if ok, verrs := df.VerifyHeaderAndTrailerTOC(); !ok {
 		return append(errs, verrs...)
 	} else if len(verrs) > 0 {
 		errs = append(errs, verrs...)
